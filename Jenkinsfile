@@ -12,7 +12,7 @@ node
       echo "JOB Name ${env.JOB_NAME}"
   
    properties([[$class: 'JiraProjectProperty'], buildDiscarder(logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '2', daysToKeepStr: '', numToKeepStr: '2')), pipelineTriggers([pollSCM('* * * * *')])])
-  Testing out line 15 for webhook triggers
+
   stage("CheckOutCodeGit")
   {
    git branch: 'development', credentialsId: '65fb834f-a83b-4fe7-8e11-686245c47a65', url: 'https://github.com/MithunTechnologiesDevOps/maven-web-application.git'
