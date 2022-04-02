@@ -10,10 +10,7 @@ stage('2MavenBuild'){
 stage('3CodeQualitty'){
     sh "${mavenHome}/bin/mvn sonar:sonar"
 }
-stage('4Upload2Artifacts'){
-    sh "${mavenHome}/bin/mvn deploy"
-}
- stage('6.Deploy2uat'){
+stage('6.Deploy2uat'){
         sshagent(['ec2-user_tomcat']) {
   }
 stage('7.approval'){
