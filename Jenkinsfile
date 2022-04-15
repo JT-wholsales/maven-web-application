@@ -1,54 +1,35 @@
-node
- {
-  
-  def mavenHome = tool name: "maven3.6.2"
-  
-      echo "GitHub BranhName ${env.BRANCH_NAME}"
-      echo "Jenkins Job Number ${env.BUILD_NUMBER}"
-      echo "Jenkins Node Name ${env.NODE_NAME}"
-  
-      echo "Jenkins Home ${env.JENKINS_HOME}"
-      echo "Jenkins URL ${env.JENKINS_URL}"
-      echo "JOB Name ${env.JOB_NAME}"
-  
-   properties([[$class: 'JiraProjectProperty'], buildDiscarder(logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '2', daysToKeepStr: '', numToKeepStr: '2')), pipelineTriggers([pollSCM('* * * * *')])])
-
-  stage("CheckOutCodeGit")
-  {
-   git branch: 'development', credentialsId: '65fb834f-a83b-4fe7-8e11-686245c47a65', url: 'https://github.com/MithunTechnologiesDevOps/maven-web-application.git'
- }
- 
- stage("Build")
- {
- sh "${mavenHome}/bin/mvn clean package"
- }
- 
-  /*
- stage("ExecuteSonarQubeReport")
- {
- sh "${mavenHome}/bin/mvn sonar:sonar"
- }
- 
- stage("UploadArtifactsintoNexus")
- {
- sh "${mavenHome}/bin/mvn deploy"
- }
- 
-  stage("DeployAppTomcat")
- {
-  sshagent(['423b5b58-c0a3-42aa-af6e-f0affe1bad0c']) {
-    sh "scp -o StrictHostKeyChecking=no target/maven-web-application.war  ec2-user@15.206.91.239:/opt/apache-tomcat-9.0.34/webapps/" 
+node{
+  def mavenHome = tool name:"Maven_Jenkins"
+  stage('1Clone'){
+ git credentialsId: 'GitHUB_With_Token', url: 'https://github.com/Adanwam/paypal-web-app'
   }
- }
- 
- stage('EmailNotification')
- {
- mail bcc: 'mylandmarktech@gmail.com', body: '''Build is over
-
- Thanks,
- Landmark Technologies,
- +14372152483.''', cc: 'mylandmarktech@gmail.com', from: '', replyTo: '', subject: 'Build is over!!', to: 'mylandmarktech@gmail.com'
- }
- */
- 
- }
+stage('2MavenBuild'){
+    sh "${mavenHome}/bin/mvn clean package"
+   // bat 'mvn package'
+  }
+stage('3CodeQualitty'){
+    sh "${mavenHome}/bin/mvn sonar:sonar"
+}
+stage('4Upload2Artifacts'){
+    sh "${mavenHome}/bin/mvn deploy"
+}
+ stage('6.Deploy2uat'){
+        sshagent(['ec2-user_tomcat']) {
+  }
+stage('7.approval'){
+      timeout(time:8, unit:'HOURS'){
+        input message: 'Please approve deployment to Production'
+      }
+ stage('8.Deploy2prod'){
+          sshagent(['ec2-user_tomcat']) {
+        sh "scp -o StrictHostKeyChecking=no target/*.war ec2-user@172.31.92.0:/opt/tomcat9/webapps/app.war"      
+    }  
+    stage('9.EmailAlerts'){
+        emailext body: '''Hi
+        Build status for boa app.
+        Regards,
+        Landmark Technologies''', recipientProviders: [developers(), requestor()], subject: 'Project status', to: 'boa@gmail.com'
+           }
+        }
+          }
+     }
