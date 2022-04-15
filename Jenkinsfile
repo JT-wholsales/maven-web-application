@@ -1,7 +1,7 @@
 node{
   def mavenHome = tool name:"Maven_Jenkins"
   stage('1Clone'){
- git credentialsId: 'GitHUB_With_Token', url: 'https://github.com/Adanwam/paypal-web-app'
+ git credentialsId: 'GitHUB_With_Token', url: 'https://github.com/Adanwam/maven-web-application'
   }
 stage('2MavenBuild'){
     sh "${mavenHome}/bin/mvn clean package"
