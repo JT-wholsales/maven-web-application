@@ -1,30 +1,9 @@
-  //deploy_to_docker 
-  pipeline{
-    agent any 
-      stages{
-        stage('undeploy'){
-          steps{
-            sh "echo UNDEPLOYING existing application"
-            sh "docker rm -f adanwam"--------> this is to undeploy the existing application
-            }
-         }
-        stage('deployment'){
-          steps{
-            sh "echo application is ready for deployment"
-            sh "docker run -d -p 8000:8080 --name adanwam ducker20/maven-web-application:V2"--------> we are creating a container and deploying with docker
-        }
-      }
-    }
-  }
-===================================================================================================================
 
-
-
-***************************************************************************
 COMBINATION OF THE CI/CD PIPELINE:
-
 ****************************************************************************
-pipeline{
+ //CI_CD
+ //Build image; deploy_to_docker; push image to dockerHUB
+ pipeline{
   agent any 
   tools{
     maven "Maven3.8.4"
@@ -60,16 +39,26 @@ pipeline{
       stage('predeployment'){
       steps{
         sh "echo creating docker image"
-        sh "docker build -t ducker20/maven-web-application:V2 . " -------------> this is to build the image(maven-web-application:V2)
-        sh "docker push ducker20/maven-web-application:V2" -------------> this is to push the built image to our dockerHUB(image registry)
+        # this is to build the image(maven-web-application:V2)
+        sh "docker build -t ducker20/maven-web-application:V2 . "
+        # this is to push the built image to our dockerHUB(image registry)
+        sh "docker push ducker20/maven-web-application:V2" 
       }
     }
+      stage('undeploy'){
+          steps{
+            sh "echo UNDEPLOYING existing application"
+            # this is to undeploy the existing application
+            sh "docker rm -f adanwam"
+              }
+            }
       stage('deployment'){
           steps{
             sh "echo application is now ready for deployment"
             sh "sleep 20"
-            sh "docker run -d -p 8000:8080 --name adanwam ducker20/maven-web-application:V2"--------> we are creating a container(maven-web-application) and deploying with docker; this is how to see it on the webbrowser
-          }
+            #we are creating a container(maven-web-application) and deploying with docker; this is how to see it on the webbrowser
+            sh "docker run -d -p 8000:8080 --name adanwam ducker20/maven-web-application:V2"
+            }
          }
         stage('emailNotification'){
           steps{
