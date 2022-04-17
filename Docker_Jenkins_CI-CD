@@ -1,5 +1,5 @@
 
-COMBINATION OF THE CI/CD PIPELINE:
+COMBINATION OF THE CI/CD PIPELINE SCRIPT:
 ****************************************************************************
  //CI_CD
  //Build image; deploy_to_docker; push image to dockerHUB
